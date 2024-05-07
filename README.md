@@ -25,3 +25,34 @@ Similar to the server's handle connection, a loop is initialised on the client w
 * the server receives the message, prints it on terminal and puts it in the broadcast receiver
 * the server's broadcast receiver reseives that message, which it will send/broadcast to all clients connected to it
 * all clients connected to the server receive the message and outputs it on their terminal
+
+## Experiment 2.2: Modifying port
+
+To edit the port that the server is listening in on, we just have to edit the port number in the address that is inputted in the TcpListener::bind methodfrom 2000 to 8080. If we left it at that, the server would be listening in on port 8080, but the client would still be trying to establish a connection to port 2000, thus breaking the code. To fix this we also edit the ClientBuilder::from_uri method so that the input is the adddress with the new port, thus making it so that the client will try to establish a connection to port 8080 (thus allowing the server and client work again). 
+
+As for what websocket protocol is used and if they are the same, from what I can tell they do indeed use the same package, specifically the tokio_websockets package to establish websocket connections. Since they use the same package to do so, they must also use the same protocol. In the last 2 screenshots of this section we will go through how a websocket connection is established.
+
+First using tokio's net method, we have the server listen in on the address and port we have set. Next we have a loop that awaits a tcp connection to occur before going through the entire loop. If a tcp connection is established with the server, the listener will accept it, returning a variable of tokio's TcpStream struct that will be used for communication. After that, the server will use tokio_websockets' ServerBuilder to build a web socket server connection that can receive and send messages to the client, utilising the TcpStream we established earlier, at which point a thread is used to handle all of the receiving and sending from and to that connection. On the client's side, it will use tokio_websockets' ClientBuilder to establish a TCP stream with the server, thus establishing a web socket client connection. The server and client websocket connections are both necessary to facilitate websocket communication between the 2 and they are both established using tokio_websockets, thus they use the same protocol.
+
+**Change in server**
+![image](https://github.com/Sirered/adprog-tutorial10-chatasync/assets/126568984/b7010d93-9dce-471b-87b6-33feba688408)
+
+**Change in client**
+![image](https://github.com/Sirered/adprog-tutorial10-chatasync/assets/126568984/772583cd-52f2-47bf-bda7-728e11a7b872)
+
+**Imports to show where methods and classes come from**
+![image](https://github.com/Sirered/adprog-tutorial10-chatasync/assets/126568984/c30bc7f4-87c3-44b1-8b5d-52ade13654ec)
+![image](https://github.com/Sirered/adprog-tutorial10-chatasync/assets/126568984/83e2bb8c-fc18-4c34-b59b-2d9da86b1155)
+
+**Server websocket protocol**
+![image](https://github.com/Sirered/adprog-tutorial10-chatasync/assets/126568984/3356c8ed-a684-436b-978c-ba8623c52796)
+
+## Experiment 2.3: Small changes, add IP and Port
+
+Firstly, I noticed all of the screenshots on the module show that the client gets a message from the server that is just for them (not broadcasted). To add that, I just added a write.send message before the select loop inside handle_connection thus, sending that message only to the specific client. Then to add the origin address and port of the messages to be broadcasted, I just use the format! method to combine the address and text string into one string, and placed that formatted string into the broadcast receiver, instead of just the text. Since the broadcast receicves the formatted message, the clients will be broadcasted the formatted message, thus when they print them out, it will include the address and port. Other than that I also made some changes to the println!s to be more in line with the screenshots on the module, like printining the full 'Galih's Computer - from Server: {message}' on client
+
+**Server and Client 1**
+![image](https://github.com/Sirered/adprog-tutorial10-chatasync/assets/126568984/e3de5fc0-80b2-4fa7-9b02-5b52d241c2f7)
+
+**Client 2 and Client 3**
+![image](https://github.com/Sirered/adprog-tutorial10-chatasync/assets/126568984/9088012c-224d-4d7e-9d55-cc7d53b02865)
