@@ -30,7 +30,7 @@ async fn main() -> Result<(), tokio_websockets::Error> {
                     Some(Ok(msg)) => {
                         // Display the message received from the server
                         if let Some(text) = msg.as_text() {
-                            println!("From Galih's server: {}", text);
+                            println!("Galih's Computer - From server: {}", text);
                         }
                     }
                     Some(Err(e)) => {

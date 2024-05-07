@@ -14,6 +14,7 @@ async fn handle_connection(
 ) -> Result<(), Box<dyn Error + Send + Sync>> {
     let (mut write, mut read) = ws_stream.split();
     let mut bcast_rx = bcast_tx.subscribe();
+    write.send(Message::text("Welcome to chat! Type a message")).await?;
 
     loop {
         tokio::select! {
@@ -23,8 +24,9 @@ async fn handle_connection(
                     Some(Ok(msg)) => {
                         if msg.is_text() {
                             if let Some(text) = msg.as_text() {
-                                println!("From client: {}", text);
-                                if let Err(e) = bcast_tx.send(text.to_string()) {
+                                println!("From client {addr:?} \"{}\"", text);
+                                let message = format!("{addr:?}: {}", text);
+                                if let Err(e) = bcast_tx.send(message) {
                                     eprintln!("Error broadcasting message: {}", e);
                                     break;
                                 }
@@ -75,7 +77,7 @@ async fn main() -> Result<(), Box<dyn Error + Send + Sync>> {
 
     loop {
         let (socket, addr) = listener.accept().await?;
-        println!("New connection from {addr:?}");
+        println!("New connection from Galih's computer {addr:?}");
         let bcast_tx = bcast_tx.clone();
         tokio::spawn(async move {
             // Wrap the raw TCP stream into a websocket.
