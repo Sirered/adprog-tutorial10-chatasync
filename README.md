@@ -46,3 +46,13 @@ First using tokio's net method, we have the server listen in on the address and 
 
 **Server websocket protocol**
 ![image](https://github.com/Sirered/adprog-tutorial10-chatasync/assets/126568984/3356c8ed-a684-436b-978c-ba8623c52796)
+
+## Experiment 2.3: Small changes, add IP and Port
+
+Firstly, I noticed all of the screenshots on the module show that the client gets a message from the server that is just for them (not broadcasted). To add that, I just added a write.send message before the select loop inside handle_connection thus, sending that message only to the specific client. Then to add the origin address and port of the messages to be broadcasted, I just use the format! method to combine the address and text string into one string, and placed that formatted string into the broadcast receiver, instead of just the text. Since the broadcast receicves the formatted message, the clients will be broadcasted the formatted message, thus when they print them out, it will include the address and port. Other than that I also made some changes to the println!s to be more in line with the screenshots on the module, like printining the full 'Galih's Computer - from Server: {message}' on client
+
+**Server and Client 1**
+![image](https://github.com/Sirered/adprog-tutorial10-chatasync/assets/126568984/e3de5fc0-80b2-4fa7-9b02-5b52d241c2f7)
+
+**Client 2 and Client 3**
+![image](https://github.com/Sirered/adprog-tutorial10-chatasync/assets/126568984/9088012c-224d-4d7e-9d55-cc7d53b02865)
